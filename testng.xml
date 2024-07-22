@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="apitest" parallel="methods">
+	<test name="testngTest">
+		<classes>
+			<class name="com.example.apitest.java.api.GetGenderByNameTest" />
+		</classes>
+	</test>	
+</suite>
