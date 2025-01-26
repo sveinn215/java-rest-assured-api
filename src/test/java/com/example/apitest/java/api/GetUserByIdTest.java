@@ -10,22 +10,22 @@ import io.restassured.response.Response;
 public class GetUserByIdTest extends BaseTest {
     @BeforeTest
     public void testSetup(){
-        SetApiSchema("GetUserSchema.json");
+        setApiSchema("GetUserSchema.json");
     }
 
     @Test(description = "client succeed get user By valid Id", priority = 1)
     public void verifyUserByValidId()
     {
-        SetApiUrl("users/7657509");
-        Response response=InvokeMethodAndAssertStatus("GET", 200);
-        AssertJsonSchema(response);        
+        setApiUrl("users/7657582");
+        Response response=invokeMethodAndAssertStatus("GET", 200);
+        assertJsonSchema(response);        
     }
 
     @Test(description = "client failed get user By unregistered Id", priority = 1)
     public void verifyUserByUnregisteredId()
     {
-        SetApiUrl("users/123456");
-        Response response=InvokeMethodAndAssertStatus("GET", 404);  
+        setApiUrl("users/123456");
+        Response response=invokeMethodAndAssertStatus("GET", 404);  
         Assert.assertEquals("Resource not found", response.getBody().jsonPath().getString("message"));      
     }
 }

@@ -16,15 +16,15 @@ public class BaseTest {
     private RequestSpecification request = RestAssured.given();
     private String apiUrl = null;
     private File schemaFile = null;
+    private Dotenv dotenv = null;
 
     public BaseTest(){
-        Dotenv dotenv = Dotenv.configure()
+        dotenv = Dotenv.configure()
         .directory("./src/test/java/com/example/apitest/resources")
         .ignoreIfMalformed()
         .ignoreIfMissing()
         .load();
 
-        this.apiUrl = dotenv.get("API_URL");
         defaultHeaders.put("Accept", "application/json, text/plain, */*");
         defaultHeaders.put("Content-Type", "application/json");
         defaultHeaders.put("Authorization", dotenv.get("BEARER_TOKEN"));
@@ -51,7 +51,7 @@ public class BaseTest {
         return response;
     }
 
-    public void AssertJsonSchema(String schemaPath, Response response){
+    public void assertJsonSchema(String schemaPath, Response response){
         MatcherAssert.assertThat(
             "Validate json schema",
             response.getBody().asString(),
@@ -59,20 +59,23 @@ public class BaseTest {
         );
     }
 
-    public Response InvokeMethodAndAssertStatus(String method, int status){
+    public Response invokeMethodAndAssertStatus(String method, int status){
         Response response = null;
         if(method.equals("GET")){
             response = (Response) this.request.
                 get(this.apiUrl).
                 then().
                 statusCode(status).
+                log().all().and().
                 extract().
                 response();
-        }else if (method.equals("POST")){
+
+        } else if(method.equals("DELETE")){
             response = (Response) this.request.
-                post(this.apiUrl).
+                delete(this.apiUrl).
                 then().
                 statusCode(status).
+                log().all().and().
                 extract().
                 response();
         }
@@ -80,23 +83,45 @@ public class BaseTest {
         return response;
     }
 
-    public void SetApiUrl(String endpoint){
-        this.apiUrl = this.apiUrl + endpoint;
+    public Response invokeMethodAndAssertStatus(String method, int status, Object body){
+        Response response = null;
+        if (method.equals("POST")){
+            response = (Response) this.request.
+                body(body).
+                post(this.apiUrl).
+                then().
+                statusCode(status).
+                log().all().and().
+                extract().
+                response();
+        }else if (method.equals("PUT")){
+            response = (Response) this.request.
+                body(body).
+                put(this.apiUrl).
+                then().
+                statusCode(status).
+                log().all().and().
+                extract().
+                response();
+        }
+        response.getBody().prettyPrint();
+        return response;
     }
 
-    public void SetApiSchema(String fileName){
+    public void setApiUrl(String endpoint){
+        this.apiUrl = dotenv.get("API_URL") + endpoint;
+    }
+
+    public void setApiSchema(String fileName){
         this.schemaFile = new File(System.getProperty("user.dir")+"/src/test/java/com/example/apitest/resources/schema/"+fileName);
     }
-
-    public void SetRequestBody(Object requestBody){
-        this.request.body(requestBody);
-    }
     
-    public void AssertJsonSchema(Response response){
+    public void assertJsonSchema(Response response){
         MatcherAssert.assertThat(
             "Validate json schema",
             response.getBody().asString(),
             JsonSchemaValidator.matchesJsonSchema(this.schemaFile)
         );
     }
+
 }

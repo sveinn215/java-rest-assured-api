@@ -3,7 +3,10 @@
 <suite name="apitest" parallel="methods">
 	<test name="testngTest">
 		<classes>
-			<class name="com.example.apitest.java.api.GetGenderByNameTest" />
+			<class name="com.example.apitest.java.api.GetUserByIdTest" />
+			<class name="com.example.apitest.java.api.PostUserTest" />
+			<class name="com.example.apitest.java.api.PutUserTest" />
+			<class name="com.example.apitest.java.api.DeleteUserTest" />
 		</classes>
 	</test>	
 </suite>
